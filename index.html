@@ -1,714 +1,733 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gokarn Suri — AI Systems Builder</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    :root {
-      --bg:      #080809;
-      --surface: #111114;
-      --border:  #1e1e25;
-      --border2: #2c2c38;
-      --text:    #e0e0ee;
-      --muted:   #888899;
-      --dim:     #333344;
-      --accent:  #1a6aff;
-      --a10:     rgba(26,106,255,0.10);
-      --a25:     rgba(26,106,255,0.28);
-      --white:   #ffffff;
-      --green:   #22c55e;
-      --mono:    'IBM Plex Mono', monospace;
-      --display: 'Syne', sans-serif;
-      --body:    'Inter', sans-serif;
-      --pad:     20px;
+    :root{
+      --bg:#08080a;
+      --card:#0f0f13;
+      --border:#1c1c24;
+      --border2:#2a2a36;
+      --text:#d8d8e8;
+      --muted:#6b6b80;
+      --accent:#2563ff;
+      --accent-dim:rgba(37,99,255,.12);
+      --accent-border:rgba(37,99,255,.3);
+      --white:#fff;
+      --green:#22c55e;
+      --display:'Syne',sans-serif;
+      --body:'Inter',sans-serif;
     }
 
-    html { scroll-behavior: smooth; }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+    ::selection{background:var(--accent);color:#fff}
+    a{color:inherit;text-decoration:none}
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--body);
-      font-size: 16px;
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
+    /* ── NAV ── */
+    nav{
+      position:fixed;inset:0 0 auto 0;z-index:99;
+      background:rgba(8,8,10,.9);backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
     }
+    .nav-row{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 18px;height:50px;
+    }
+    .logo{font-family:var(--body);font-size:.82rem;font-weight:600;color:var(--accent);letter-spacing:.02em}
+    .logo span{color:var(--muted);font-weight:400}
 
-    ::selection { background: var(--accent); color: #fff; }
+    /* hamburger */
+    .hbg{display:flex;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:6px}
+    .hbg span{display:block;width:20px;height:2px;background:var(--muted);border-radius:2px;transition:.25s}
+    .hbg.open span:nth-child(1){transform:translateY(6px) rotate(45deg);background:var(--white)}
+    .hbg.open span:nth-child(2){opacity:0}
+    .hbg.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);background:var(--white)}
 
-    /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
-      background: rgba(8,8,9,0.94);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
+    /* drawer */
+    .drawer{
+      display:none;position:fixed;inset:50px 0 0 0;z-index:98;
+      background:rgba(8,8,10,.97);padding:8px 18px 32px;
+      flex-direction:column;
     }
-    .nav-inner {
-      padding: 0 var(--pad);
-      height: 52px;
-      display: flex; align-items: center; justify-content: space-between;
+    .drawer.open{display:flex}
+    .drawer a{
+      font-size:1.6rem;font-weight:600;color:var(--muted);
+      padding:16px 0;border-bottom:1px solid var(--border);
+      transition:color .15s;
     }
-    .nav-logo {
-      font-family: var(--mono); font-size: 0.85rem;
-      color: var(--accent); text-decoration: none; letter-spacing: 0.04em;
-    }
-    .nav-logo span { color: var(--muted); }
+    .drawer a:hover{color:var(--white)}
 
-    .hamburger {
-      display: flex; flex-direction: column; gap: 5px;
-      cursor: pointer; padding: 6px; background: none; border: none;
+    /* desktop nav */
+    .nav-links{display:none;list-style:none;gap:0}
+    .nav-links a{
+      font-size:.72rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;
+      color:var(--muted);padding:0 14px;height:50px;
+      display:flex;align-items:center;
+      border-left:1px solid var(--border);
+      transition:color .15s;
     }
-    .hamburger span {
-      width: 22px; height: 2px; background: var(--muted);
-      display: block; transition: all 0.25s;
-    }
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--white); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--white); }
+    .nav-links a:hover{color:var(--white)}
 
-    .nav-drawer {
-      display: none;
-      position: fixed; top: 52px; left: 0; right: 0; bottom: 0;
-      background: rgba(8,8,9,0.98);
-      z-index: 800;
-      flex-direction: column;
-      padding: 24px var(--pad);
-    }
-    .nav-drawer.open { display: flex; }
-    .nav-drawer a {
-      font-family: var(--body); font-size: 1.5rem; font-weight: 500;
-      color: var(--muted); text-decoration: none;
-      padding: 20px 0;
-      border-bottom: 1px solid var(--border);
-      transition: color .15s;
-    }
-    .nav-drawer a:hover { color: var(--white); }
-
-    .nav-links { display: none; list-style: none; }
-    .nav-links a {
-      font-family: var(--mono); font-size: 0.72rem;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
-      padding: 0 16px; height: 52px;
-      display: flex; align-items: center;
-      border-left: 1px solid var(--border);
-      transition: color .15s;
-    }
-    .nav-links a:hover { color: var(--white); }
-
-    /* HERO */
-    #hero {
-      min-height: 100svh;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 80px var(--pad) 52px;
-      border-bottom: 1px solid var(--border);
-      position: relative; overflow: hidden;
-    }
-    #hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 44px 44px;
-      opacity: 0.3;
-      pointer-events: none;
-    }
-    #hero::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 90% 60% at 5% 90%, rgba(26,106,255,0.14) 0%, transparent 65%);
-      pointer-events: none;
-    }
-    .hero-content { position: relative; z-index: 1; }
-
-    .eyebrow {
-      font-family: var(--mono); font-size: 0.75rem;
-      color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase;
-      margin-bottom: 20px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .eyebrow::before { content: ''; width: 18px; height: 1px; background: var(--accent); }
-
-    h1 {
-      font-family: var(--display); font-weight: 800;
-      font-size: clamp(3.4rem, 17vw, 7rem);
-      color: var(--white);
-      line-height: 0.88; letter-spacing: -0.04em;
-      margin-bottom: 20px;
-    }
-    h1 em { display: block; color: var(--accent); font-style: normal; }
-
-    .hero-role {
-      font-family: var(--body); font-size: 1rem; font-weight: 400;
-      color: var(--muted); margin-bottom: 20px; line-height: 1.5;
+    /* ── HERO ── */
+    #hero{
+      padding:70px 18px 44px;
+      min-height:100svh;
+      display:flex;flex-direction:column;justify-content:flex-end;
+      border-bottom:1px solid var(--border);
+      position:relative;overflow:hidden;
     }
 
-    .hero-tagline {
-      font-size: 1.1rem; color: #bbb; font-weight: 300;
-      line-height: 1.75; margin-bottom: 36px;
+    /* dot grid */
+    #hero::before{
+      content:'';position:absolute;inset:0;
+      background-image:radial-gradient(circle,rgba(255,255,255,.06) 1px,transparent 1px);
+      background-size:28px 28px;
+      pointer-events:none;
+    }
+    /* blue glow */
+    #hero::after{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse 70% 50% at 0% 100%,rgba(37,99,255,.18) 0%,transparent 60%);
+      pointer-events:none;
     }
 
-    .hero-cta-row { display: flex; flex-direction: column; gap: 12px; }
+    .hero-inner{position:relative;z-index:1}
 
-    .btn-contact {
-      font-family: var(--body); font-size: 1rem; font-weight: 500;
-      color: var(--white); text-decoration: none;
-      padding: 17px 24px;
-      background: var(--accent); border: 1px solid var(--accent);
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: opacity .2s;
+    .chip{
+      display:inline-flex;align-items:center;gap:6px;
+      font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);
+      background:var(--accent-dim);border:1px solid var(--accent-border);
+      padding:5px 12px;border-radius:999px;margin-bottom:20px;
     }
-    .btn-contact:hover { opacity: 0.85; }
+    .chip-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(34,197,94,.8)}
 
-    .btn-secondary {
-      font-family: var(--body); font-size: 1rem; font-weight: 400;
-      color: var(--muted); text-decoration: none;
-      padding: 17px 24px;
-      border: 1px solid var(--border2);
-      display: flex; align-items: center; justify-content: center;
-      transition: color .2s, border-color .2s;
+    h1{
+      font-family:var(--display);font-weight:800;
+      font-size:clamp(2.6rem,11vw,3.2rem);
+      color:var(--white);line-height:1;letter-spacing:-.03em;
+      margin-bottom:14px;
     }
-    .btn-secondary:hover { color: var(--white); border-color: var(--muted); }
+    h1 em{color:var(--accent);font-style:normal}
 
-    .hero-status {
-      display: flex; align-items: center; gap: 8px; margin-top: 20px;
-      font-family: var(--body); font-size: 0.9rem; color: var(--muted);
-    }
-    .status-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--green); box-shadow: 0 0 8px rgba(34,197,94,.8);
-      flex-shrink: 0;
+    .hero-sub{
+      font-size:.85rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:16px;
     }
 
-    /* SECTIONS */
-    .section {
-      border-bottom: 1px solid var(--border);
-      padding: 52px var(--pad);
+    .hero-desc{
+      font-size:.98rem;color:#aaa;font-weight:300;
+      line-height:1.7;margin-bottom:28px;max-width:400px;
     }
 
-    .section-tag {
-      font-family: var(--mono); font-size: 0.72rem;
-      color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase;
-      margin-bottom: 4px;
-      display: flex; align-items: center; gap: 10px;
+    .cta-row{display:flex;flex-direction:column;gap:10px}
+
+    .btn{
+      display:flex;align-items:center;justify-content:center;
+      font-size:.9rem;font-weight:500;padding:14px 20px;
+      transition:.2s;cursor:pointer;border:none;
     }
-    .section-tag::before {
-      content: attr(data-num);
-      color: var(--dim); font-size: 2rem;
-      font-family: var(--display); font-weight: 800;
-      letter-spacing: -0.04em; line-height: 1;
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-primary:hover{opacity:.85}
+    .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2)}
+    .btn-ghost:hover{color:var(--white);border-color:var(--muted)}
+
+    /* ── SECTION WRAPPER ── */
+    .sec{border-bottom:1px solid var(--border);padding:44px 18px}
+    .sec-label{
+      font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+      color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px;
+    }
+    .sec-label::before{content:attr(data-n);color:var(--border2);font-size:1.6rem;font-family:var(--display);font-weight:800;letter-spacing:-.04em;line-height:1}
+
+    h2{
+      font-family:var(--display);font-weight:800;
+      font-size:clamp(1.7rem,7vw,2.4rem);
+      color:var(--white);letter-spacing:-.03em;line-height:1.05;margin-bottom:18px;
     }
 
-    h2.sh {
-      font-family: var(--display); font-weight: 800;
-      font-size: clamp(2rem, 9vw, 3.2rem);
-      color: var(--white); letter-spacing: -0.03em;
-      line-height: 1.0; margin-bottom: 20px;
+    p.body{font-size:.97rem;color:#aaa;font-weight:300;line-height:1.75;margin-bottom:12px}
+    p.body:last-child{margin-bottom:0}
+
+    /* ── ACHIEVEMENTS ── */
+    .ach-stack{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+    .ach-card{
+      background:var(--card);border:1px solid var(--border);
+      padding:18px 16px;display:flex;flex-direction:column;gap:8px;
+    }
+    .ach-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .ach-left{display:flex;align-items:center;gap:10px}
+    .ach-icon{font-size:1.2rem}
+    .ach-name{font-family:var(--display);font-weight:700;font-size:.97rem;color:var(--white);line-height:1.25}
+    .badge{
+      font-size:.6rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+      color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-border);
+      padding:3px 8px;white-space:nowrap;flex-shrink:0;border-radius:4px;
+    }
+    .ach-body{font-size:.87rem;color:var(--muted);line-height:1.6}
+
+    /* ── PROJECTS ── */
+    .proj-stack{display:flex;flex-direction:column;gap:12px;margin-top:24px}
+
+    .proj-card{background:var(--card);border:1px solid var(--border);overflow:hidden}
+
+    .proj-top{
+      padding:20px 16px 16px;
+      border-bottom:1px solid var(--border);
+    }
+    .proj-meta-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .proj-counter{font-size:.65rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .proj-badge{
+      font-size:.62rem;font-weight:500;letter-spacing:.06em;
+      color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-border);
+      padding:3px 8px;border-radius:4px;
+    }
+    .proj-name{
+      font-family:var(--display);font-weight:800;
+      font-size:clamp(1.8rem,9vw,2.6rem);
+      color:var(--white);letter-spacing:-.04em;line-height:.95;margin-bottom:8px;
+    }
+    .proj-sub{font-size:.78rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+    .proj-desc{
+      font-size:.92rem;color:#aaa;font-weight:300;line-height:1.7;
+      padding:16px;border-bottom:1px solid var(--border);
     }
 
-    .prose p {
-      font-size: 1.05rem; color: #bbb;
-      font-weight: 300; line-height: 1.8;
-      margin-bottom: 14px;
+    /* accordion cells */
+    .proj-accordion{display:flex;flex-direction:column}
+    .acc-item{border-bottom:1px solid var(--border)}
+    .acc-item:last-child{border-bottom:none}
+    .acc-trigger{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:14px 16px;cursor:pointer;
+      font-size:.82rem;font-weight:600;color:var(--text);
+      background:none;border:none;width:100%;text-align:left;
+      transition:color .15s;
     }
-    .prose p:last-child { margin-bottom: 0; }
+    .acc-trigger:hover{color:var(--white)}
+    .acc-icon{font-size:.9rem;color:var(--muted);transition:.25s;flex-shrink:0}
+    .acc-trigger.open .acc-icon{transform:rotate(45deg);color:var(--accent)}
+    .acc-body{
+      display:none;padding:0 16px 16px;
+    }
+    .acc-body.open{display:block}
+    .acc-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+    .acc-text{font-size:.9rem;color:#999;font-weight:300;line-height:1.7}
+    .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+    .tag{font-size:.68rem;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border2);padding:3px 8px;border-radius:3px}
 
-    /* ACHIEVEMENTS */
-    .ach-list {
-      margin-top: 28px;
-      border: 1px solid var(--border);
+    /* ── VISION ── */
+    .vision-q{
+      font-family:var(--display);font-weight:700;
+      font-size:clamp(1.3rem,6vw,1.9rem);
+      color:var(--white);letter-spacing:-.02em;line-height:1.25;margin-bottom:20px;
     }
-    .ach-item {
-      padding: 24px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .ach-item:last-child { border-bottom: none; }
+    .vision-q .hl{color:var(--accent)}
 
-    .ach-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    .ach-icon { font-size: 1.3rem; flex-shrink: 0; }
-    .ach-badge {
-      font-family: var(--mono); font-size: 0.68rem;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--accent); border: 1px solid var(--a25);
-      padding: 4px 10px; background: var(--a10);
-      white-space: nowrap; flex-shrink: 0;
+    /* ── CONTACT ── */
+    .contact-list{display:flex;flex-direction:column;gap:0;margin-top:24px;border:1px solid var(--border)}
+    .contact-row{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:18px 16px;border-bottom:1px solid var(--border);
+      transition:background .15s;
     }
-    .ach-title {
-      font-family: var(--display); font-weight: 700;
-      font-size: 1.05rem; color: var(--white);
-      letter-spacing: -0.01em; line-height: 1.3;
-    }
-    .ach-desc {
-      font-family: var(--body); font-size: 0.95rem;
-      color: var(--muted); line-height: 1.65;
-    }
+    .contact-row:last-child{border-bottom:none}
+    .contact-row:hover{background:var(--card)}
+    .cl-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+    .cl-val{font-size:.97rem;font-weight:500;color:var(--text)}
+    .cl-arrow{color:var(--accent);font-size:1rem;flex-shrink:0}
 
-    /* PROJECTS */
-    .project-card {
-      border: 1px solid var(--border);
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-    .project-card:last-child { margin-bottom: 0; }
+    /* ── FOOTER ── */
+    footer{padding:20px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+    footer span{font-size:.7rem;color:var(--muted)}
 
-    .proj-card-header {
-      padding: 28px 20px 24px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-    }
-    .proj-card-top {
-      display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
-      margin-bottom: 12px;
-    }
-    .proj-num {
-      font-family: var(--mono); font-size: 0.7rem;
-      color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
-    }
-    .proj-status {
-      font-family: var(--mono); font-size: 0.7rem;
-      color: var(--accent); border: 1px solid var(--a25);
-      padding: 4px 10px; background: var(--a10);
-      white-space: nowrap; flex-shrink: 0;
-    }
-    .proj-name {
-      font-family: var(--display); font-weight: 800;
-      font-size: clamp(2.2rem, 11vw, 4rem);
-      color: var(--white); letter-spacing: -0.04em;
-      line-height: 0.9; margin-bottom: 10px;
-    }
-    .proj-sub {
-      font-family: var(--body); font-size: 0.88rem;
-      color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.06em; font-weight: 400;
+    /* ── DESKTOP ── */
+    @media(min-width:720px){
+      .hbg{display:none}
+      .nav-links{display:flex}
+      .drawer{display:none!important}
+      .nav-row{padding:0 40px}
+      .nav-links a{height:50px}
+
+      #hero{padding:90px 40px 60px}
+      h1{font-size:clamp(3rem,6vw,5rem)}
+      .cta-row{flex-direction:row}
+      .btn{width:auto}
+
+      .sec{padding:64px 40px}
+      .ach-stack{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+      .proj-accordion{display:grid;grid-template-columns:1fr 1fr}
+      .acc-item{border-right:1px solid var(--border)}
+      .acc-item:nth-child(even){border-right:none}
+      .contact-list{flex-direction:row}
+      .contact-row{flex-direction:column;align-items:flex-start;flex:1;border-bottom:none;border-right:1px solid var(--border)}
+      .contact-row:last-child{border-right:none}
+      footer{padding:20px 40px}
     }
 
-    .proj-intro {
-      font-size: 1rem; color: #bbb; font-weight: 300;
-      line-height: 1.75; padding: 22px 20px;
-      border-bottom: 1px solid var(--border);
+    @media(min-width:1100px){
+      .nav-row{padding:0 64px}
+      #hero{padding:100px 64px 72px}
+      .sec{padding:80px 64px}
+      footer{padding:22px 64px}
     }
 
-    .proj-cells { display: flex; flex-direction: column; }
-    .proj-cell {
-      padding: 20px 20px;
-      border-bottom: 1px solid var(--border);
+    /* ── ANIMATIONS ── */
+
+    /* Fade + slide up on scroll */
+    .reveal{
+      opacity:0;
+      transform:translateY(28px);
+      transition:opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1);
     }
-    .proj-cell:last-child { border-bottom: none; }
+    .reveal.visible{opacity:1;transform:translateY(0)}
 
-    .cell-tag {
-      font-family: var(--body); font-size: 0.72rem; font-weight: 500;
-      color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase;
-      margin-bottom: 6px;
+    /* Stagger children */
+    .reveal-child>*{
+      opacity:0;
+      transform:translateY(22px);
+      transition:opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
     }
-    .cell-h {
-      font-family: var(--display); font-size: 1.05rem; font-weight: 700;
-      color: var(--white); margin-bottom: 8px; letter-spacing: -0.01em;
+    .reveal-child.visible>*{opacity:1;transform:translateY(0)}
+    .reveal-child.visible>*:nth-child(1){transition-delay:.05s}
+    .reveal-child.visible>*:nth-child(2){transition-delay:.12s}
+    .reveal-child.visible>*:nth-child(3){transition-delay:.19s}
+    .reveal-child.visible>*:nth-child(4){transition-delay:.26s}
+    .reveal-child.visible>*:nth-child(5){transition-delay:.33s}
+
+    /* Hero entrance */
+    .hero-inner>*{
+      opacity:0;
+      transform:translateY(20px);
+      animation:heroIn .7s cubic-bezier(.22,1,.36,1) forwards;
     }
-    .cell-p {
-      font-size: 0.95rem; color: #999;
-      line-height: 1.75; font-weight: 300;
+    .hero-inner>.chip       {animation-delay:.1s}
+    .hero-inner>h1          {animation-delay:.2s}
+    .hero-inner>.hero-sub   {animation-delay:.3s}
+    .hero-inner>.hero-desc  {animation-delay:.38s}
+    .hero-inner>.cta-row    {animation-delay:.46s}
+    @keyframes heroIn{to{opacity:1;transform:translateY(0)}}
+
+    /* Glow pulse on status dot */
+    .chip-dot{animation:pulse 2.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 6px rgba(34,197,94,.8)}50%{box-shadow:0 0 14px rgba(34,197,94,1),0 0 28px rgba(34,197,94,.4)}}
+
+    /* Smooth accordion */
+    .acc-body{
+      display:block!important;
+      max-height:0;overflow:hidden;padding-top:0;padding-bottom:0;
+      transition:max-height .4s cubic-bezier(.22,1,.36,1), padding .35s ease;
     }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-    .tag {
-      font-family: var(--body); font-size: 0.75rem; font-weight: 400;
-      letter-spacing: 0.05em; color: var(--muted);
-      border: 1px solid var(--border2);
-      padding: 4px 10px; text-transform: uppercase;
+    .acc-body.open{max-height:300px;padding-bottom:16px}
+
+    /* Hover lift on cards */
+    .ach-card{transition:border-color .25s, transform .25s, box-shadow .25s}
+    .ach-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+
+    .proj-card{transition:border-color .25s, box-shadow .25s}
+    .proj-card:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+
+    /* Button press feel */
+    .btn{transition:opacity .2s, transform .15s, background .2s, color .2s, border-color .2s}
+    .btn:active{transform:scale(.97)}
+
+    /* Nav link underline slide */
+    .nav-links a{position:relative;overflow:hidden}
+    .nav-links a::after{
+      content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+      background:var(--accent);
+      transform:scaleX(0);transform-origin:left;
+      transition:transform .25s cubic-bezier(.22,1,.36,1);
     }
+    .nav-links a:hover::after{transform:scaleX(1)}
 
-    /* VISION */
-    .vision-q {
-      font-family: var(--display); font-weight: 700;
-      font-size: clamp(1.5rem, 7vw, 2.2rem);
-      color: var(--white); letter-spacing: -0.025em;
-      line-height: 1.2; margin-bottom: 24px;
+    /* Contact row arrow nudge */
+    .cl-arrow{transition:transform .2s cubic-bezier(.22,1,.36,1)}
+    .contact-row:hover .cl-arrow{transform:translateX(5px)}
+
+    /* Drawer links slide in */
+    .drawer.open a{
+      animation:drawerIn .35s cubic-bezier(.22,1,.36,1) both;
     }
-    .vision-q .hl { color: var(--accent); }
+    .drawer.open a:nth-child(1){animation-delay:.04s}
+    .drawer.open a:nth-child(2){animation-delay:.08s}
+    .drawer.open a:nth-child(3){animation-delay:.12s}
+    .drawer.open a:nth-child(4){animation-delay:.16s}
+    .drawer.open a:nth-child(5){animation-delay:.20s}
+    @keyframes drawerIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
 
-    /* CONTACT */
-    .contact-cards {
-      margin-top: 28px;
-      border: 1px solid var(--border);
+    /* Acc trigger icon smooth */
+    .acc-icon{display:inline-block;transition:transform .3s cubic-bezier(.22,1,.36,1), color .2s}
+    .acc-trigger.open .acc-icon{transform:rotate(45deg);color:var(--accent)}
+
+    /* Badge shimmer on card hover */
+    .badge,.proj-badge{position:relative;overflow:hidden}
+    .badge::after,.proj-badge::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+      transform:translateX(-100%);
+      transition:transform .55s ease;
     }
-    .contact-card {
-      padding: 22px 20px;
-      border-bottom: 1px solid var(--border);
-      text-decoration: none;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      transition: background .15s;
-    }
-    .contact-card:last-child { border-bottom: none; }
-    .contact-card:hover { background: var(--surface); }
+    .ach-card:hover .badge::after,.proj-card:hover .proj-badge::after{transform:translateX(100%)}
 
-    .contact-card-left { display: flex; flex-direction: column; gap: 4px; }
-    .c-label {
-      font-family: var(--body); font-size: 0.75rem; font-weight: 500;
-      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
-    }
-    .c-value {
-      font-family: var(--body); font-size: 1.05rem; font-weight: 500; color: var(--text);
-    }
-    .contact-arrow { color: var(--accent); font-size: 1.2rem; flex-shrink: 0; }
-
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 22px var(--pad);
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 8px;
-    }
-    footer p, footer .fp {
-      font-family: var(--mono); font-size: 0.72rem; color: var(--dim);
-    }
-
-    /* DESKTOP */
-    @media (min-width: 768px) {
-      :root { --pad: 48px; }
-
-      .hamburger { display: none; }
-      .nav-links { display: flex; }
-      .nav-drawer { display: none !important; }
-      .nav-inner { height: 56px; }
-      .nav-links a { height: 56px; }
-
-      #hero { padding: 120px var(--pad) 80px; justify-content: center; }
-
-      .hero-cta-row { flex-direction: row; align-items: center; }
-      .btn-contact, .btn-secondary { width: auto; }
-
-      .section { padding: 80px var(--pad); }
-
-      .two-col-layout {
-        display: grid;
-        grid-template-columns: 160px 1fr;
-        gap: 48px; align-items: start;
-      }
-
-      .ach-list {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0; border: 1px solid var(--border);
-        background: var(--border);
-        gap: 1px;
-      }
-      .ach-item { border-bottom: none; border: none; background: var(--bg); }
-      .ach-item.full-width { grid-column: span 2; }
-
-      .proj-cells { display: grid; grid-template-columns: 1fr 1fr; }
-      .proj-cell { border-right: 1px solid var(--border); }
-      .proj-cell:nth-child(2n) { border-right: none; }
-
-      .contact-cards { display: flex; flex-direction: row; }
-      .contact-card {
-        flex: 1; border-bottom: none; border-right: 1px solid var(--border);
-        flex-direction: column; align-items: flex-start; gap: 6px;
-      }
-      .contact-card:last-child { border-right: none; }
-    }
-
-    @media (min-width: 1100px) {
-      :root { --pad: 72px; }
-    }
+    /* Section tag fade */
+    .sec-label{transition:color .2s}
+    .sec:hover .sec-label{color:var(--accent)}
   </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <div class="nav-inner">
-    <a class="nav-logo" href="#hero">GS<span>_sys</span></a>
+  <div class="nav-row">
+    <a class="logo" href="#hero">Gokarn<span> Suri</span></a>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
-      <li><a href="#achievements">Awards</a></li>
+      <li><a href="#awards">Awards</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#vision">Vision</a></li>
-      <li><a href="#contact-section">Contact</a></li>
+      <li><a href="#contact">Contact</a></li>
     </ul>
-    <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <button class="hbg" id="hbg" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
 
-<div class="nav-drawer" id="nav-drawer">
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
   <a href="#about">About</a>
-  <a href="#achievements">Awards</a>
+  <a href="#awards">Awards</a>
   <a href="#projects">Projects</a>
   <a href="#vision">Vision</a>
-  <a href="#contact-section">Contact</a>
+  <a href="#contact">Contact</a>
 </div>
 
+<!-- HERO -->
 <section id="hero">
-  <div class="hero-content">
-    <div class="eyebrow">gokarn_suri / portfolio / 2025</div>
+  <div class="hero-inner">
+    <div class="chip"><span class="chip-dot"></span>Available for conversations</div>
     <h1>Gokarn<br><em>Suri.</em></h1>
-    <div class="hero-role">AI Systems Builder &nbsp;·&nbsp; Infrastructure Monitoring</div>
-    <p class="hero-tagline">Building AI solutions for critical infrastructure challenges that affect millions of people.</p>
-    <div class="hero-cta-row">
-      <a href="#contact-section" class="btn-contact">Get in Touch →</a>
-      <a href="#projects" class="btn-secondary">View Projects</a>
-    </div>
-    <div class="hero-status">
-      <span class="status-dot"></span> Available for conversations
+    <div class="hero-sub">AI Systems Builder · Infrastructure</div>
+    <p class="hero-desc">Building AI solutions for critical infrastructure — water networks, transit safety, road safety — problems that affect millions.</p>
+    <div class="cta-row">
+      <a href="#contact" class="btn btn-primary">Get in Touch →</a>
+      <a href="#projects" class="btn btn-ghost">View Projects</a>
     </div>
   </div>
 </section>
 
-<section class="section" id="about">
-  <div class="two-col-layout">
-    <div class="section-tag" data-num="01">About</div>
-    <div class="prose">
-      <h2 class="sh">AI builder.<br>Infrastructure focus.</h2>
-      <p>I'm a 14-year-old AI systems builder working at the intersection of machine learning, sensor data analysis, and public infrastructure. My work targets problems with direct, large-scale societal impact — not demonstrations, but real-world systems that matter.</p>
-      <p>I approach engineering with a bias toward real-world constraints: systems that work in the field, under pressure, in resource-limited environments. The most consequential technology lives at the boundary of AI and physical infrastructure — pipelines, roads, transit networks, cities.</p>
-      <p>Every project I build is a step toward operating at scale. I'm doing that now — at 14 — with systems that already work and recognition to match.</p>
+<!-- ABOUT -->
+<section class="sec" id="about">
+  <div class="sec-label reveal" data-n="01">About</div>
+  <h2 class="reveal">AI builder.<br>Infrastructure focus.</h2>
+  <p class="body reveal">I'm a 14-year-old AI systems builder working at the intersection of machine learning, sensor data analysis, and public infrastructure. My work targets large-scale societal impact — not demos, but real systems that matter.</p>
+  <p class="body">I build for real-world constraints: systems that work in the field, under pressure, in resource-limited environments. The most consequential technology lives at the boundary of AI and physical infrastructure — pipelines, roads, transit networks, cities.</p>
+  <p class="body">Every project is a step toward operating at scale. I'm doing that now — at 14 — with systems that work and recognition to match.</p>
+</section>
+
+<!-- AWARDS -->
+<section class="sec" id="awards">
+  <div class="sec-label reveal" data-n="02">Awards</div>
+  <h2 class="reveal">Built. Recognized.<br>Validated.</h2>
+  <div class="ach-stack reveal-child">
+
+    <div class="ach-card">
+      <div class="ach-top">
+        <div class="ach-left">
+          <div class="ach-icon">🏆</div>
+          <div class="ach-name">CBSE National Science Exhibition 2025</div>
+        </div>
+        <span class="badge">National Winner</span>
+      </div>
+      <div class="ach-body">National-level winner at India's premier school science exhibition, organized by NCERT for outstanding innovation in science and mathematics.</div>
     </div>
+
+    <div class="ach-card">
+      <div class="ach-top">
+        <div class="ach-left">
+          <div class="ach-icon">💡</div>
+          <div class="ach-name">INSPIRE MANAK Grant — DST, Govt. of India</div>
+        </div>
+        <span class="badge">₹10,000 Grant</span>
+      </div>
+      <div class="ach-body">₹10,000 prototype development grant from the Department of Science & Technology — awarded for innovations with real societal impact.</div>
+    </div>
+
+    <div class="ach-card">
+      <div class="ach-top">
+        <div class="ach-left">
+          <div class="ach-icon">🥇</div>
+          <div class="ach-name">Winner — Inter-DPS Chandigarh</div>
+        </div>
+        <span class="badge">1st Place</span>
+      </div>
+      <div class="ach-body">First place at the Inter-Delhi Public School competition, competing against innovators from DPS branches across North India.</div>
+    </div>
+
+    <div class="ach-card">
+      <div class="ach-top">
+        <div class="ach-left">
+          <div class="ach-icon">🌍</div>
+          <div class="ach-name">Global Sustainability Awards (GSA)</div>
+        </div>
+        <span class="badge">International</span>
+      </div>
+      <div class="ach-body">Recognized at the Global Sustainability Awards — an international platform for student projects aligned with UN Sustainable Development Goals.</div>
+    </div>
+
+    <div class="ach-card">
+      <div class="ach-top">
+        <div class="ach-left">
+          <div class="ach-icon">📄</div>
+          <div class="ach-name">Patent Filed — Smart Bus Ecosystem</div>
+        </div>
+        <span class="badge">Patent Pending</span>
+      </div>
+      <div class="ach-body">IP application filed for SBE — an AI system for detecting passenger overloading in public buses. Pending with the Indian Patent Office.</div>
+    </div>
+
   </div>
 </section>
 
-<section class="section" id="achievements">
-  <div class="section-tag" data-num="02">Awards &amp; Recognition</div>
-  <h2 class="sh" style="margin-top:10px;">Built. Recognized.<br>Validated.</h2>
-  <div class="ach-list">
-    <div class="ach-item">
-      <div class="ach-top">
-        <div class="ach-icon">🏆</div>
-        <span class="ach-badge">National Winner · 2025</span>
-      </div>
-      <div class="ach-title">CBSE National Science Exhibition 2025</div>
-      <div class="ach-desc">National-level winner at India's premier school science exhibition, organized by NCERT for outstanding innovation in science and mathematics.</div>
-    </div>
-    <div class="ach-item">
-      <div class="ach-top">
-        <div class="ach-icon">💡</div>
-        <span class="ach-badge">₹10,000 Govt. Grant</span>
-      </div>
-      <div class="ach-title">INSPIRE MANAK Grant — DST, Govt. of India</div>
-      <div class="ach-desc">₹10,000 prototype development grant from the Department of Science & Technology — awarded to innovations demonstrating real societal impact potential.</div>
-    </div>
-    <div class="ach-item">
-      <div class="ach-top">
-        <div class="ach-icon">🥇</div>
-        <span class="ach-badge">1st Place · Inter-DPS</span>
-      </div>
-      <div class="ach-title">Winner — Inter-DPS Chandigarh</div>
-      <div class="ach-desc">First place at the Inter-Delhi Public School competition, competing against student innovators from DPS branches across North India.</div>
-    </div>
-    <div class="ach-item">
-      <div class="ach-top">
-        <div class="ach-icon">🌍</div>
-        <span class="ach-badge">International · SDG Award</span>
-      </div>
-      <div class="ach-title">Winner — Global Sustainability Awards (GSA)</div>
-      <div class="ach-desc">Recognized at the Global Sustainability Awards — an international platform for student projects aligned with UN Sustainable Development Goals.</div>
-    </div>
-    <div class="ach-item full-width">
-      <div class="ach-top">
-        <div class="ach-icon">📄</div>
-        <span class="ach-badge">Patent Pending · India</span>
-      </div>
-      <div class="ach-title">Patent Filed — Smart Bus Ecosystem (SBE)</div>
-      <div class="ach-desc">IP application filed for the Smart Bus Ecosystem — an AI system for detecting passenger overloading in public buses. Patent pending with the Indian Patent Office.</div>
-    </div>
-  </div>
-</section>
+<!-- PROJECTS -->
+<section class="sec" id="projects">
+  <div class="sec-label reveal" data-n="03">Projects</div>
+  <h2 class="reveal">Three systems.<br>Real problems.</h2>
+  <p class="body" style="margin-bottom:0">AI tackling failures in water infrastructure, transit safety, and road safety at city scale.</p>
 
-<section class="section" id="projects">
-  <div class="section-tag" data-num="03">Projects</div>
-  <h2 class="sh" style="margin-top:10px;">Three systems.<br>Real problems.</h2>
-  <p style="font-size:1rem; color:#bbb; margin-bottom:28px; font-weight:300; line-height:1.75;">Each project targets a failure in public infrastructure — water networks, transit safety, and road safety — using AI at scale.</p>
+  <div class="proj-stack">
 
-  <div class="project-card">
-    <div class="proj-card-header">
-      <div class="proj-card-top">
-        <div class="proj-num">Project 01 / 03</div>
-        <div class="proj-status">🏆 CBSE National Winner</div>
+    <!-- P1 -->
+    <div class="proj-card reveal">
+      <div class="proj-top">
+        <div class="proj-meta-row">
+          <span class="proj-counter">01 / 03</span>
+          <span class="proj-badge">🏆 CBSE National Winner</span>
+        </div>
+        <div class="proj-name">VarunNetra</div>
+        <div class="proj-sub">AI Anomaly Detection · Water Pipelines</div>
       </div>
-      <div class="proj-name">VarunNetra</div>
-      <div class="proj-sub">AI Anomaly Detection · Water Pipelines</div>
-    </div>
-    <p class="proj-intro">Water loss through illegal tapping and undetected leakage is a critical public infrastructure crisis. VarunNetra detects anomalies the moment they occur — replacing slow, expensive manual inspection.</p>
-    <div class="proj-cells">
-      <div class="proj-cell">
-        <div class="cell-tag">Problem</div>
-        <div class="cell-h">No Real-Time Visibility</div>
-        <p class="cell-p">Municipalities lose millions of litres daily to pipeline failures. Manual inspection is too slow and costly for large urban networks.</p>
-      </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Solution</div>
-        <div class="cell-h">Continuous AI Monitoring</div>
-        <p class="cell-p">Processes flow and pressure sensor data in real time using ML to distinguish normal operation from tapping and leakage — with instant alerts.</p>
-      </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Technical Approach</div>
-        <div class="cell-h">Pattern Learning Per Segment</div>
-        <p class="cell-p">ML models trained on per-segment sensor baselines detect statistical deviations — filtering noise while flagging genuine anomalies for operators.</p>
-        <div class="tags">
-          <span class="tag">Anomaly Detection</span>
-          <span class="tag">Sensor Data</span>
-          <span class="tag">ML Models</span>
-          <span class="tag">Real-Time</span>
+      <p class="proj-desc">Water loss through illegal tapping and undetected leakage costs cities millions of litres daily. VarunNetra detects anomalies the moment they occur — replacing slow, manual inspection.</p>
+      <div class="proj-accordion">
+        <div class="acc-item">
+          <button class="acc-trigger">Problem <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">No Real-Time Visibility</div>
+            <div class="acc-text">Municipalities lose millions of litres daily to pipeline failures. Manual inspection is too slow and costly for large urban networks.</div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Solution <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Continuous AI Monitoring</div>
+            <div class="acc-text">Processes flow and pressure sensor data in real time using ML to distinguish normal operation from anomalies — with instant alerts.</div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Technical <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Pattern Learning Per Segment</div>
+            <div class="acc-text">ML models trained on per-segment sensor baselines detect statistical deviations — filtering noise while flagging genuine anomalies.</div>
+            <div class="tags"><span class="tag">Anomaly Detection</span><span class="tag">Sensor Data</span><span class="tag">ML Models</span><span class="tag">Real-Time</span></div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Impact <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Smart City Ready</div>
+            <div class="acc-text">Integrates with public utility networks and smart city frameworks — reducing water loss and giving governments actionable intelligence.</div>
+          </div>
         </div>
       </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Impact</div>
-        <div class="cell-h">Smart City Ready</div>
-        <p class="cell-p">Integrates with public utility networks and smart city frameworks — reducing non-revenue water loss and giving governments actionable infrastructure intelligence.</p>
-      </div>
     </div>
-  </div>
 
-  <div class="project-card">
-    <div class="proj-card-header">
-      <div class="proj-card-top">
-        <div class="proj-num">Project 02 / 03</div>
-        <div class="proj-status">📄 Patent Filed</div>
+    <!-- P2 -->
+    <div class="proj-card reveal">
+      <div class="proj-top">
+        <div class="proj-meta-row">
+          <span class="proj-counter">02 / 03</span>
+          <span class="proj-badge">📄 Patent Filed</span>
+        </div>
+        <div class="proj-name">SBE</div>
+        <div class="proj-sub">Smart Bus Ecosystem · Overload Detection</div>
       </div>
-      <div class="proj-name">SBE</div>
-      <div class="proj-sub">Smart Bus Ecosystem · Overload Detection</div>
-    </div>
-    <p class="proj-intro">Overloaded public buses are a persistent safety hazard in India's transit systems. SBE uses AI to detect passenger overloading in real time and trigger preventive action before it becomes a crisis.</p>
-    <div class="proj-cells">
-      <div class="proj-cell">
-        <div class="cell-tag">Problem</div>
-        <div class="cell-h">Unsafe Overloading Undetected</div>
-        <p class="cell-p">Buses routinely breach safety thresholds with no automated detection. Drivers rely on manual judgment — often under pressure to proceed anyway.</p>
-      </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Solution</div>
-        <div class="cell-h">AI-Based Load Monitoring</div>
-        <p class="cell-p">Monitors passenger load dynamically, flagging overloading events in real time and alerting operators, drivers, and transport authorities automatically.</p>
-      </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Technical Approach</div>
-        <div class="cell-h">Sensor Fusion + Classification</div>
-        <p class="cell-p">Weight and occupancy inputs processed through a trained model identifying safe, near-limit, and overload states — enabling graduated alerts, not binary triggers.</p>
-        <div class="tags">
-          <span class="tag">Sensor Fusion</span>
-          <span class="tag">Load Classification</span>
-          <span class="tag">Transit Safety</span>
-          <span class="tag">Patent Pending</span>
+      <p class="proj-desc">Overloaded buses are a persistent safety hazard in India's transit systems. SBE uses AI to detect passenger overloading in real time and trigger preventive action before crisis.</p>
+      <div class="proj-accordion">
+        <div class="acc-item">
+          <button class="acc-trigger">Problem <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Unsafe Overloading Undetected</div>
+            <div class="acc-text">Buses routinely breach safety thresholds with no automated detection. Drivers rely on manual judgment under pressure to proceed.</div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Solution <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">AI-Based Load Monitoring</div>
+            <div class="acc-text">Monitors passenger load dynamically, flagging overloading events in real time and alerting operators and transport authorities automatically.</div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Technical <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Sensor Fusion + Classification</div>
+            <div class="acc-text">Weight and occupancy inputs processed through a trained model identifying safe, near-limit, and overload states — enabling graduated alerts.</div>
+            <div class="tags"><span class="tag">Sensor Fusion</span><span class="tag">Classification</span><span class="tag">Transit Safety</span><span class="tag">Patent Pending</span></div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Impact <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Safer Transit at Scale</div>
+            <div class="acc-text">Deployable across city bus fleets — reduces accident risk, supports regulatory compliance, and gives operators fleet-wide safety telemetry.</div>
+          </div>
         </div>
       </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Impact</div>
-        <div class="cell-h">Safer Transit at Scale</div>
-        <p class="cell-p">Deployable across city bus fleets — reduces accident risk, supports regulatory compliance, and gives operators fleet-wide safety telemetry.</p>
-      </div>
     </div>
-  </div>
 
-  <div class="project-card">
-    <div class="proj-card-header">
-      <div class="proj-card-top">
-        <div class="proj-num">Project 03 / 03</div>
-        <div class="proj-status">🔬 Active Development</div>
+    <!-- P3 -->
+    <div class="proj-card reveal">
+      <div class="proj-top">
+        <div class="proj-meta-row">
+          <span class="proj-counter">03 / 03</span>
+          <span class="proj-badge">🔬 Active Development</span>
+        </div>
+        <div class="proj-name">VigilDrive</div>
+        <div class="proj-sub">AI Drowsiness Detection · Road Safety</div>
       </div>
-      <div class="proj-name">VigilDrive</div>
-      <div class="proj-sub">AI Drowsiness Detection · Road Safety</div>
-    </div>
-    <p class="proj-intro">Driver fatigue causes thousands of road accidents each year. Vigil Drive uses computer vision AI to detect early signs of drowsiness in real time and intervene before an incident occurs.</p>
-    <div class="proj-cells">
-      <div class="proj-cell">
-        <div class="cell-tag">Problem</div>
-        <div class="cell-h">Fatigue: A Silent Road Hazard</div>
-        <p class="cell-p">Drowsy driving accounts for a significant share of fatal accidents in India. No affordable real-time detection system exists for commercial vehicles.</p>
-      </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Solution</div>
-        <div class="cell-h">Real-Time Drowsiness Alerting</div>
-        <p class="cell-p">Monitors facial landmarks and eye movement through a camera feed, using AI to detect drowsiness indicators and alert the driver immediately.</p>
-      </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Technical Approach</div>
-        <div class="cell-h">Computer Vision + Behavioural AI</div>
-        <p class="cell-p">Tracks eye aspect ratio, blink frequency, and head pose in real time using lightweight models designed to run on embedded vehicle hardware.</p>
-        <div class="tags">
-          <span class="tag">Computer Vision</span>
-          <span class="tag">Eye Tracking</span>
-          <span class="tag">Edge AI</span>
-          <span class="tag">Road Safety</span>
+      <p class="proj-desc">Driver fatigue causes thousands of road accidents yearly. Vigil Drive uses computer vision AI to detect early signs of drowsiness and intervene before an incident occurs.</p>
+      <div class="proj-accordion">
+        <div class="acc-item">
+          <button class="acc-trigger">Problem <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Fatigue: A Silent Road Hazard</div>
+            <div class="acc-text">Drowsy driving accounts for a significant share of fatal accidents in India. No affordable real-time detection system exists for commercial vehicles.</div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Solution <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Real-Time Drowsiness Alerting</div>
+            <div class="acc-text">Monitors facial landmarks and eye movement through a camera feed, detecting drowsiness indicators and alerting the driver immediately.</div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Technical <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Computer Vision + Behavioural AI</div>
+            <div class="acc-text">Tracks eye aspect ratio, blink frequency, and head pose using lightweight models designed to run on embedded vehicle hardware.</div>
+            <div class="tags"><span class="tag">Computer Vision</span><span class="tag">Eye Tracking</span><span class="tag">Edge AI</span><span class="tag">Road Safety</span></div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-trigger">Impact <span class="acc-icon">+</span></button>
+          <div class="acc-body">
+            <div class="acc-label">Deployable Across Fleets</div>
+            <div class="acc-text">Targeted at truck fleets, bus operators, and ride-share platforms — affordable, AI-powered fatigue monitoring with minimal hardware.</div>
+          </div>
         </div>
       </div>
-      <div class="proj-cell">
-        <div class="cell-tag">Impact</div>
-        <div class="cell-h">Deployable Across Fleets</div>
-        <p class="cell-p">Targeted at truck fleets, bus operators, and ride-share platforms — affordable, AI-powered fatigue monitoring with minimal hardware requirements.</p>
-      </div>
     </div>
+
   </div>
 </section>
 
-<section class="section" id="vision">
-  <div class="two-col-layout">
-    <div class="section-tag" data-num="04">Vision</div>
-    <div class="prose">
-      <div class="vision-q">
-        Technology that operates at the scale of <span class="hl">cities</span> and <span class="hl">systems</span> — not apps, but infrastructure.
-      </div>
-      <p>The most important problems of the next decade sit at the boundary of AI, engineering, and public need. Water networks, transit systems, road safety — these are not niche challenges. They are the backbone of how cities function.</p>
-      <p>I am building toward large-scale public impact — starting now, at 14, with systems that already work and a track record of national and international recognition. The approach is rigorous, the ambition is real, and the direction is clear.</p>
-    </div>
-  </div>
+<!-- VISION -->
+<section class="sec" id="vision">
+  <div class="sec-label reveal" data-n="04">Vision</div>
+  <div class="vision-q reveal">Technology at the scale of <span class="hl">cities</span> and <span class="hl">systems</span> — not apps, but infrastructure.</div>
+  <p class="body">The most important problems of the next decade sit at the boundary of AI, engineering, and public need. Water networks, transit systems, road safety — these are the backbone of how cities function.</p>
+  <p class="body">I am building toward large-scale public impact — starting now, at 14, with systems that already work and a track record of national and international recognition.</p>
 </section>
 
-<section class="section" id="contact-section" style="border-bottom:none;">
-  <div class="section-tag" data-num="05">Contact</div>
-  <h2 class="sh" style="margin-top:10px;">Let's talk.</h2>
-  <p style="font-size:1rem; color:#bbb; font-weight:300; line-height:1.75; max-width:460px;">Open to conversations with founders, engineers, researchers, and policymakers working on infrastructure, AI, or public technology.</p>
-  <div class="contact-cards">
-    <a href="mailto:gokarnonwork@gmail.com" class="contact-card">
-      <div class="contact-card-left">
-        <div class="c-label">Email</div>
-        <div class="c-value">gokarnonwork@gmail.com</div>
+<!-- CONTACT -->
+<section class="sec" id="contact" style="border-bottom:none">
+  <div class="sec-label reveal" data-n="05">Contact</div>
+  <h2 class="reveal">Let's talk.</h2>
+  <p class="body">Open to conversations with founders, engineers, researchers, and policymakers working on infrastructure, AI, or public technology.</p>
+  <div class="contact-list reveal">
+    <a href="mailto:gokarnonwork@gmail.com" class="contact-row">
+      <div>
+        <div class="cl-label">Email</div>
+        <div class="cl-val">gokarnonwork@gmail.com</div>
       </div>
-      <span class="contact-arrow">→</span>
+      <span class="cl-arrow">→</span>
     </a>
-    <a href="tel:+919220559978" class="contact-card">
-      <div class="contact-card-left">
-        <div class="c-label">Phone</div>
-        <div class="c-value">+91 92205 59978</div>
+    <a href="tel:+919220559978" class="contact-row">
+      <div>
+        <div class="cl-label">Phone</div>
+        <div class="cl-val">+91 92205 59978</div>
       </div>
-      <span class="contact-arrow">→</span>
+      <span class="cl-arrow">→</span>
     </a>
-    <a href="https://www.linkedin.com/in/gokarn-suri-3a9b44232" target="_blank" rel="noopener" class="contact-card">
-      <div class="contact-card-left">
-        <div class="c-label">LinkedIn</div>
-        <div class="c-value">gokarn-suri</div>
+    <a href="https://www.linkedin.com/in/gokarn-suri-3a9b44232" target="_blank" rel="noopener" class="contact-row">
+      <div>
+        <div class="cl-label">LinkedIn</div>
+        <div class="cl-val">gokarn-suri</div>
       </div>
-      <span class="contact-arrow">→</span>
+      <span class="cl-arrow">→</span>
     </a>
   </div>
 </section>
 
 <footer>
-  <p>© 2025 Gokarn Suri</p>
-  <div class="fp">GS_sys · AI Systems Builder</div>
+  <span>© 2025 Gokarn Suri</span>
+  <span>AI Systems Builder</span>
 </footer>
 
 <script>
-  const btn = document.getElementById('hamburger');
-  const drawer = document.getElementById('nav-drawer');
-  btn.addEventListener('click', () => {
-    btn.classList.toggle('open');
+  // Hamburger
+  const hbg = document.getElementById('hbg');
+  const drawer = document.getElementById('drawer');
+  hbg.addEventListener('click', () => {
+    hbg.classList.toggle('open');
     drawer.classList.toggle('open');
     document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
   });
-  drawer.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      btn.classList.remove('open');
-      drawer.classList.remove('open');
-      document.body.style.overflow = '';
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    hbg.classList.remove('open');
+    drawer.classList.remove('open');
+    document.body.style.overflow = '';
+  }));
+
+  // Accordion
+  document.querySelectorAll('.acc-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const body = btn.nextElementSibling;
+      const isOpen = btn.classList.contains('open');
+      // close siblings in same accordion
+      const accordion = btn.closest('.proj-accordion');
+      accordion.querySelectorAll('.acc-trigger').forEach(b => {
+        b.classList.remove('open');
+        b.nextElementSibling.classList.remove('open');
+      });
+      if (!isOpen) {
+        btn.classList.add('open');
+        body.classList.add('open');
+      }
     });
   });
-</script>
 
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal, .reveal-child');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => io.observe(el));
+</script>
 </body>
 </html>
