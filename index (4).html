@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gokarn Suri — AI Systems Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #070709;
+      --surface:  #0f0f12;
+      --border:   #1c1c22;
+      --border2:  #2a2a34;
+      --text:     #dcdce8;
+      --muted:    #5a5a72;
+      --dim:      #28282f;
+      --accent:   #1a6aff;
+      --a10:      rgba(26,106,255,0.10);
+      --a25:      rgba(26,106,255,0.25);
+      --white:    #ffffff;
+      --green:    #22c55e;
+      --mono:     'IBM Plex Mono', monospace;
+      --display:  'Syne', sans-serif;
+      --body:     'IBM Plex Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--accent); color: #fff; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      background: rgba(7,7,9,0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto;
+      padding: 0 48px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--mono); font-size: 0.78rem;
+      color: var(--accent); text-decoration: none; letter-spacing: 0.04em;
+    }
+    .nav-logo span { color: var(--muted); }
+    .nav-links { display: flex; list-style: none; }
+    .nav-links a {
+      font-family: var(--mono); font-size: 0.7rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      padding: 0 18px; height: 56px;
+      display: flex; align-items: center;
+      border-left: 1px solid var(--border);
+      transition: color .15s, background .15s;
+    }
+    .nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-main {
+      padding: 130px 72px 80px;
+      display: flex; flex-direction: column; justify-content: center;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+    .hero-main::before {
+      content: '';
+      position: absolute; top: 110px; left: 72px;
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, transparent, var(--accent));
+    }
+
+    .eyebrow {
+      font-family: var(--mono); font-size: 0.7rem;
+      color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 44px;
+    }
+
+    h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(4rem, 7vw, 7.5rem);
+      color: var(--white);
+      line-height: 0.88; letter-spacing: -0.04em;
+      margin-bottom: 32px;
+    }
+    h1 em { display: block; color: var(--accent); font-style: normal; }
+
+    .hero-role {
+      font-family: var(--mono); font-size: 0.75rem;
+      color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+    }
+    .hero-role::before {
+      content: ''; width: 28px; height: 1px; background: var(--accent); flex-shrink: 0;
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem; color: #666; font-weight: 300;
+      max-width: 420px; line-height: 1.8;
+    }
+
+    /* ─── CONTACT SIDEBAR ─── */
+    .hero-contact {
+      display: flex; flex-direction: column;
+    }
+
+    .contact-header {
+      padding: 130px 40px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-header .c-tag {
+      font-family: var(--mono); font-size: 0.65rem;
+      color: var(--accent); letter-spacing: 0.14em;
+      text-transform: uppercase; margin-bottom: 12px;
+    }
+    .contact-header h2 {
+      font-family: var(--display); font-size: 1.6rem; font-weight: 800;
+      color: var(--white); letter-spacing: -0.03em;
+    }
+
+    .contact-list { padding: 0 40px; flex: 1; }
+
+    .c-item {
+      border-bottom: 1px solid var(--border);
+      padding: 24px 0;
+    }
+    .c-item:last-child { border-bottom: none; }
+
+    .c-label {
+      font-family: var(--mono); font-size: 0.65rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+
+    .c-value {
+      font-family: var(--display); font-weight: 700;
+      font-size: 0.95rem; color: var(--text); line-height: 1.4;
+    }
+    .c-value a {
+      color: inherit; text-decoration: none;
+      transition: color .15s;
+      word-break: break-all;
+    }
+    .c-value a:hover { color: var(--accent); }
+
+    .status-row {
+      padding: 20px 40px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+    }
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 7px rgba(34,197,94,.7);
+      flex-shrink: 0;
+    }
+
+    /* ─── SECTIONS ─── */
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 0 72px; }
+
+    section.block {
+      border-bottom: 1px solid var(--border);
+      padding: 100px 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 64px;
+    }
+
+    .s-label {
+      font-family: var(--mono); font-size: 0.67rem;
+      color: var(--muted); letter-spacing: 0.14em;
+      text-transform: uppercase; padding-top: 8px;
+    }
+    .s-label::before {
+      content: attr(data-num);
+      display: block;
+      font-family: var(--display); font-weight: 800;
+      font-size: 2.6rem; color: var(--dim);
+      letter-spacing: -0.04em; line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    h2.sh {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      color: var(--white); letter-spacing: -0.03em;
+      line-height: 1.05; margin-bottom: 28px;
+    }
+
+    .prose p {
+      font-size: 0.97rem; color: #888;
+      font-weight: 300; line-height: 1.85;
+      max-width: 600px; margin-bottom: 16px;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+
+    /* ─── ACHIEVEMENTS ─── */
+    .ach-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    .ach-cell {
+      background: var(--bg);
+      padding: 30px 32px;
+      position: relative;
+    }
+    .ach-cell::before {
+      content: attr(data-icon);
+      font-size: 1.1rem;
+      display: block; margin-bottom: 12px;
+    }
+    .ach-title {
+      font-family: var(--display); font-weight: 700;
+      font-size: 0.95rem; color: var(--white);
+      margin-bottom: 6px; letter-spacing: -0.01em;
+    }
+    .ach-desc {
+      font-family: var(--mono); font-size: 0.72rem;
+      color: var(--muted); line-height: 1.6;
+    }
+    .ach-badge {
+      display: inline-block;
+      font-family: var(--mono); font-size: 0.63rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid var(--a25);
+      padding: 3px 9px; margin-top: 10px;
+      background: var(--a10);
+    }
+
+    /* ─── PROJECTS ─── */
+    .project-block {
+      border-bottom: 1px solid var(--border);
+      padding: 100px 0;
+    }
+    .project-block:last-of-type { border-bottom: none; }
+
+    .proj-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: end;
+      margin-bottom: 52px;
+    }
+
+    .proj-name {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      color: var(--white); letter-spacing: -0.045em;
+      line-height: 0.87;
+    }
+
+    .proj-meta {
+      text-align: right;
+    }
+    .proj-num {
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--muted); letter-spacing: 0.12em; margin-bottom: 8px;
+    }
+    .proj-status {
+      font-family: var(--mono); font-size: 0.7rem;
+      color: var(--accent); border: 1px solid var(--a25);
+      padding: 5px 12px; background: var(--a10);
+      display: inline-block;
+    }
+
+    .proj-sub {
+      font-family: var(--mono); font-size: 0.73rem;
+      color: var(--muted); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      margin-top: 40px;
+    }
+
+    .info-cell {
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 30px 34px;
+    }
+
+    .cell-tag {
+      font-family: var(--mono); font-size: 0.63rem;
+      color: var(--accent); letter-spacing: 0.14em;
+      text-transform: uppercase; margin-bottom: 12px;
+    }
+
+    .cell-h {
+      font-family: var(--display); font-size: 1rem; font-weight: 700;
+      color: var(--text); margin-bottom: 10px; letter-spacing: -0.01em;
+    }
+
+    .cell-p {
+      font-size: 0.9rem; color: #777;
+      line-height: 1.8; font-weight: 300;
+    }
+
+    .tags {
+      display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px;
+    }
+    .tag {
+      font-family: var(--mono); font-size: 0.63rem;
+      letter-spacing: 0.07em; color: var(--muted);
+      border: 1px solid var(--border2);
+      padding: 3px 9px; text-transform: uppercase;
+    }
+
+    .proj-intro {
+      font-size: 1rem; color: #777; font-weight: 300;
+      line-height: 1.85; max-width: 680px;
+    }
+
+    /* ─── VISION ─── */
+    .vision-q {
+      font-family: var(--display); font-weight: 700;
+      font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+      color: var(--white); letter-spacing: -0.025em;
+      line-height: 1.2; max-width: 700px; margin-bottom: 32px;
+    }
+    .vision-q .hl { color: var(--accent); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 26px 0;
+    }
+    footer .inner {
+      max-width: 1280px; margin: 0 auto; padding: 0 72px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p {
+      font-family: var(--mono); font-size: 0.68rem; color: var(--dim);
+    }
+    footer .fp {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 0.68rem; color: #333;
+    }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 960px) {
+      #hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-main { padding: 110px 28px 60px; border-right: none; border-bottom: 1px solid var(--border); }
+      .hero-main::before { left: 28px; }
+      .hero-contact { border-top: 1px solid var(--border); }
+      .contact-header { padding: 36px 28px 20px; }
+      .contact-list { padding: 0 28px; }
+      .status-row { padding: 18px 28px; }
+      .wrap { padding: 0 28px; }
+      .two-col { grid-template-columns: 1fr; gap: 16px; }
+      .ach-grid { grid-template-columns: 1fr; }
+      .proj-header { grid-template-columns: 1fr; gap: 16px; }
+      .proj-meta { text-align: left; }
+      .info-grid { grid-template-columns: 1fr; }
+      footer .inner { padding: 0 28px; flex-direction: column; gap: 10px; }
+      .nav-inner { padding: 0 20px; }
+      .nav-links a { padding: 0 12px; }
+    }
+
+    @media (max-width: 520px) {
+      .nav-links li:nth-child(n+4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#hero">GS<span>_sys</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#achievements">Awards</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#contact-section">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO — left: identity, right: contact -->
+<section id="hero">
+  <div class="hero-main">
+    <div class="eyebrow">gokarn_suri / portfolio / 2025</div>
+    <h1>Gokarn<br><em>Suri.</em></h1>
+    <div class="hero-role">AI Systems &nbsp;·&nbsp; Infrastructure Monitoring</div>
+    <p class="hero-tagline">Building AI solutions for critical infrastructure challenges that affect millions of people.</p>
+  </div>
+
+  <!-- Contact always visible on load -->
+  <div class="hero-contact" id="contact">
+    <div class="contact-header">
+      <div class="c-tag">— Reach Out</div>
+      <h2>Let's build<br>something real.</h2>
+    </div>
+
+    <div class="contact-list">
+      <div class="c-item">
+        <div class="c-label">Email</div>
+        <div class="c-value">
+          <a href="mailto:gokarnonwork@gmail.com">gokarnonwork@gmail.com</a>
+        </div>
+      </div>
+      <div class="c-item">
+        <div class="c-label">Phone</div>
+        <div class="c-value">
+          <a href="tel:+919220559978">+91 92205 59978</a>
+        </div>
+      </div>
+      <div class="c-item">
+        <div class="c-label">LinkedIn</div>
+        <div class="c-value">
+          <a href="https://www.linkedin.com/in/gokarn-suri-3a9b44232" target="_blank" rel="noopener">
+            linkedin.com/in/gokarn-suri
+          </a>
+        </div>
+      </div>
+      <div class="c-item">
+        <div class="c-label">Looking to connect with</div>
+        <div class="c-value" style="font-size:0.82rem; font-family: var(--mono); color: var(--muted); font-weight:300;">
+          Founders · Engineers<br>Policymakers · Researchers
+        </div>
+      </div>
+    </div>
+
+    <div class="status-row">
+      <div class="status-dot"></div>
+      Available for conversations
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="block" id="about">
+  <div class="wrap">
+    <div class="two-col">
+      <div class="s-label" data-num="01">About</div>
+      <div class="prose">
+        <h2 class="sh">AI builder.<br>Infrastructure<br>focus.</h2>
+        <p>I am a 14-year-old AI systems builder working at the intersection of machine learning, sensor data analysis, and public infrastructure. My work targets problems with direct, large-scale societal impact — not demonstrations, but real-world deployments that matter.</p>
+        <p>I approach engineering with a strong bias toward real-world constraints: systems that work in the field, under pressure, in resource-limited environments. I believe the most consequential technology lives at the boundary of AI and physical infrastructure — pipelines, roads, transit networks, cities.</p>
+        <p>Every project I build is a step toward operating at scale. I am doing that now — at 14 — with systems that already work and recognition to match.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section class="block" id="achievements">
+  <div class="wrap">
+    <div class="two-col">
+      <div class="s-label" data-num="02">Awards &amp; Recognition</div>
+      <div>
+        <h2 class="sh">Built.<br>Recognized.<br>Validated.</h2>
+
+        <div class="ach-grid">
+
+          <div class="ach-cell" data-icon="🏆">
+            <div class="ach-title">CBSE National Science Exhibition 2025</div>
+            <div class="ach-desc">National-level winner at India's premier school science exhibition, organized annually by NCERT for outstanding innovation in science and mathematics.</div>
+            <span class="ach-badge">National Winner · 2025</span>
+          </div>
+
+          <div class="ach-cell" data-icon="💡">
+            <div class="ach-title">INSPIRE MANAK Grant — DST, Govt. of India</div>
+            <div class="ach-desc">Received ₹10,000 prototype development grant from the Department of Science &amp; Technology under the INSPIRE MANAK scheme — awarded to students whose innovations demonstrate real societal impact potential.</div>
+            <span class="ach-badge">₹10,000 Govt. Grant</span>
+          </div>
+
+          <div class="ach-cell" data-icon="🥇">
+            <div class="ach-title">Winner — Inter-DPS Chandigarh</div>
+            <div class="ach-desc">First place at the Inter-Delhi Public School competition held at the Chandigarh region, competing against student innovators from DPS branches across North India.</div>
+            <span class="ach-badge">1st Place · Inter-DPS</span>
+          </div>
+
+          <div class="ach-cell" data-icon="🌍">
+            <div class="ach-title">Winner — Global Sustainability Awards (GSA)</div>
+            <div class="ach-desc">Recognized at the Global Sustainability Awards — an international platform by ARC EdTech for student projects aligned with the UN Sustainable Development Goals, open to Grade 5–12 students worldwide.</div>
+            <span class="ach-badge">International · SDG Award</span>
+          </div>
+
+          <div class="ach-cell" data-icon="📄" style="grid-column: span 2;">
+            <div class="ach-title">Patent Filed — Smart Bus Ecosystem (SBE)</div>
+            <div class="ach-desc">Intellectual property application filed for the Smart Bus Ecosystem — an AI system for detecting passenger overloading in public buses. Patent pending with the Indian Patent Office, validating the system's novelty and technical merit.</div>
+            <span class="ach-badge">Patent Pending · India</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS SECTION HEADER -->
+<section class="block" id="projects" style="padding-bottom: 40px;">
+  <div class="wrap">
+    <div class="two-col">
+      <div class="s-label" data-num="03">Projects</div>
+      <div>
+        <h2 class="sh">Three systems.<br>Real infrastructure.<br>Real problems.</h2>
+        <p class="proj-intro">Each project targets a specific failure in public infrastructure — water networks, road safety, and transit — using AI to make systems smarter, safer, and more efficient at scale.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT 1: VarunNetra -->
+<div class="project-block">
+  <div class="wrap">
+    <div class="proj-header">
+      <div>
+        <div class="proj-num">Project 01 / 03</div>
+        <div class="proj-name">Varun<br>Netra</div>
+        <div class="proj-sub" style="margin-top:10px;">AI Anomaly Detection · Water Pipelines</div>
+      </div>
+      <div class="proj-meta">
+        <div class="proj-num">Status</div>
+        <div class="proj-status">🏆 CBSE National Winner 2025</div>
+      </div>
+    </div>
+
+    <p class="proj-intro">Water loss through illegal tapping and undetected leakage is a critical public infrastructure crisis. Conventional monitoring relies on manual inspection — slow, expensive, and inadequate at city scale. VarunNetra detects anomalies the moment they occur.</p>
+
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="cell-tag">Problem</div>
+        <div class="cell-h">No Real-Time Visibility</div>
+        <p class="cell-p">Municipalities lose millions of litres daily to tapping and pipeline failures. Manual inspection cycles are too slow and too costly for large urban networks.</p>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Solution</div>
+        <div class="cell-h">Continuous AI Monitoring</div>
+        <p class="cell-p">VarunNetra processes flow and pressure sensor data in real time, using machine learning to distinguish normal operation from tapping and leakage events — with instant alerts.</p>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Technical Approach</div>
+        <div class="cell-h">Pattern Learning Per Segment</div>
+        <p class="cell-p">ML models trained on sensor baselines per pipeline segment detect statistical deviations robustly — filtering noise while flagging genuine anomalies for operators.</p>
+        <div class="tags">
+          <span class="tag">Anomaly Detection</span>
+          <span class="tag">Sensor Data</span>
+          <span class="tag">ML Models</span>
+          <span class="tag">Real-Time</span>
+        </div>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Impact</div>
+        <div class="cell-h">Smart City Ready</div>
+        <p class="cell-p">Built to integrate with public utility networks and smart city frameworks — reducing non-revenue water loss and giving governments actionable infrastructure intelligence.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 2: SBE -->
+<div class="project-block">
+  <div class="wrap">
+    <div class="proj-header">
+      <div>
+        <div class="proj-num">Project 02 / 03</div>
+        <div class="proj-name">SBE</div>
+        <div class="proj-sub" style="margin-top:10px;">Smart Bus Ecosystem · Overload Detection</div>
+      </div>
+      <div class="proj-meta">
+        <div class="proj-num">Status</div>
+        <div class="proj-status">📄 Patent Filed</div>
+      </div>
+    </div>
+
+    <p class="proj-intro">Overloaded public buses are a persistent safety hazard in India's transit systems — causing accidents, accelerating vehicle wear, and creating liability for operators. SBE uses AI to detect passenger overloading in real time and trigger preventive action before it becomes a crisis.</p>
+
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="cell-tag">Problem</div>
+        <div class="cell-h">Unsafe Overloading Undetected</div>
+        <p class="cell-p">Overcrowded buses breach safety thresholds routinely, with no automated detection mechanism. Drivers and conductors rely on manual judgment — often under pressure to proceed anyway.</p>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Solution</div>
+        <div class="cell-h">AI-Based Passenger Load Monitoring</div>
+        <p class="cell-p">SBE uses sensor data and AI to monitor passenger load dynamically, flagging overloading events in real time and alerting operators, drivers, and transport authorities automatically.</p>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Technical Approach</div>
+        <div class="cell-h">Sensor Fusion + Classification</div>
+        <p class="cell-p">Weight and occupancy sensor inputs are processed through a trained classification model that identifies safe, near-limit, and overload states — enabling graduated alerts rather than binary triggers.</p>
+        <div class="tags">
+          <span class="tag">Sensor Fusion</span>
+          <span class="tag">Load Classification</span>
+          <span class="tag">Transit Safety</span>
+          <span class="tag">Patent Pending</span>
+        </div>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Impact</div>
+        <div class="cell-h">Safer Public Transit at Scale</div>
+        <p class="cell-p">Deployable across city and state bus fleets — SBE reduces accident risk, supports compliance with transport regulations, and provides operators with fleet-wide safety telemetry.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 3: Vigil Drive -->
+<div class="project-block">
+  <div class="wrap">
+    <div class="proj-header">
+      <div>
+        <div class="proj-num">Project 03 / 03</div>
+        <div class="proj-name">Vigil<br>Drive</div>
+        <div class="proj-sub" style="margin-top:10px;">AI Drowsiness Detection · Road Safety</div>
+      </div>
+      <div class="proj-meta">
+        <div class="proj-num">Status</div>
+        <div class="proj-status">🔬 Active Development</div>
+      </div>
+    </div>
+
+    <p class="proj-intro">Driver fatigue and drowsiness cause thousands of road accidents each year — particularly in long-haul trucking, bus operations, and night driving. Vigil Drive uses AI-based computer vision to detect early signs of drowsiness in real time and intervene before an incident occurs.</p>
+
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="cell-tag">Problem</div>
+        <div class="cell-h">Fatigue: A Silent Road Hazard</div>
+        <p class="cell-p">Drowsy driving accounts for a significant percentage of fatal road accidents in India. There is no widely deployed, affordable real-time detection system for commercial or public vehicle operators.</p>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Solution</div>
+        <div class="cell-h">Real-Time Drowsiness Alerting</div>
+        <p class="cell-p">Vigil Drive monitors facial landmarks and eye movement patterns through a camera feed, using AI to detect drowsiness indicators and immediately alert the driver before loss of control.</p>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Technical Approach</div>
+        <div class="cell-h">Computer Vision + Behavioural AI</div>
+        <p class="cell-p">The system tracks eye aspect ratio, blink frequency, and head pose in real time using lightweight computer vision models — designed to run efficiently on embedded hardware in vehicles.</p>
+        <div class="tags">
+          <span class="tag">Computer Vision</span>
+          <span class="tag">Eye Tracking</span>
+          <span class="tag">Edge AI</span>
+          <span class="tag">Road Safety</span>
+        </div>
+      </div>
+      <div class="info-cell">
+        <div class="cell-tag">Impact</div>
+        <div class="cell-h">Deployable Across Commercial Fleets</div>
+        <p class="cell-p">Targeted at truck fleets, bus operators, and ride-share platforms — Vigil Drive provides an affordable, AI-powered fatigue monitoring layer with minimal hardware requirements.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VISION -->
+<section class="block" id="vision">
+  <div class="wrap">
+    <div class="two-col">
+      <div class="s-label" data-num="04">Vision</div>
+      <div class="prose">
+        <div class="vision-q">
+          Technology that operates at the scale of <span class="hl">cities</span> and <span class="hl">systems</span> —<br>not apps, but infrastructure.
+        </div>
+        <p>The most important problems of the next decade sit at the boundary of AI, engineering, and public need. Water networks, transit systems, road safety — these are not niche challenges. They are the backbone of how cities function.</p>
+        <p>I am building toward large-scale public impact — starting now, at 14, with systems that already work and a track record of national and international recognition. The approach is rigorous, the ambition is real, and the direction is clear.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT (bottom) -->
+<section class="block" id="contact-section" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="two-col">
+      <div class="s-label" data-num="05">Contact</div>
+      <div>
+        <h2 class="sh">Let's talk.</h2>
+        <p class="prose" style="color:#777; max-width:480px; margin-bottom:40px;">Open to conversations with founders, engineers, researchers, and policymakers working on infrastructure, AI systems, or public technology.</p>
+
+        <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border);">
+          <div style="background:var(--bg); padding:28px;">
+            <div class="c-label">Email</div>
+            <div class="c-value"><a href="mailto:gokarnonwork@gmail.com">gokarnonwork<br>@gmail.com</a></div>
+          </div>
+          <div style="background:var(--bg); padding:28px;">
+            <div class="c-label">Phone</div>
+            <div class="c-value"><a href="tel:+919220559978">+91 92205 59978</a></div>
+          </div>
+          <div style="background:var(--bg); padding:28px;">
+            <div class="c-label">LinkedIn</div>
+            <div class="c-value"><a href="https://www.linkedin.com/in/gokarn-suri-3a9b44232" target="_blank" rel="noopener">linkedin.com/in/<br>gokarn-suri</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="inner">
+    <p>© 2025 Gokarn Suri. All rights reserved.</p>
+    <div class="fp">
+      <div class="status-dot"></div>
+      Available for new conversations
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
